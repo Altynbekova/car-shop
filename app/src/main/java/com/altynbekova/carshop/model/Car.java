@@ -8,6 +8,15 @@ public class Car {
     private int cost;
     private String photo;
 
+    public Car(String brand, String model, int year, String description, int cost, String photo) {
+        this.brand = brand;
+        this.model = model;
+        this.year = year;
+        this.description = description;
+        this.cost = cost;
+        this.photo = photo;
+    }
+
     public String getBrand() {
         return brand;
     }
