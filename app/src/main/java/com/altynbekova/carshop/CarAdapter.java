@@ -12,15 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.altynbekova.carshop.model.Car;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
     private LayoutInflater layoutInflater;
     private List<Car> cars;
+    private OnCarClickListener onCarClickListener;
 
-    public CarAdapter(Context context, List<Car> cars) {
+    public CarAdapter(Context context, List<Car> cars, OnCarClickListener clickListener) {
         this.layoutInflater = LayoutInflater.from(context);
         this.cars = cars;
+        onCarClickListener = clickListener;
     }
 
     @Override
@@ -30,6 +33,10 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
         holder.info.setText(String.format("%s, %s (%s)", car.getBrand(), car.getModel(), car.getYear()));
         holder.description.setText(car.getDescription());
         holder.cost.setText(String.valueOf(car.getCost()));
+
+        holder.itemView.findViewById(R.id.cardView).setOnClickListener(
+                v -> onCarClickListener.onClick(car, position)
+        );
     }
 
     @NonNull
@@ -55,5 +62,9 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ViewHolder> {
             description = itemView.findViewById(R.id.description);
             cost = itemView.findViewById(R.id.cost);
         }
+    }
+
+    interface OnCarClickListener {
+        void onClick(Car car, int position);
     }
 }

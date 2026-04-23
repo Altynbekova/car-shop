@@ -38,13 +38,17 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = binding.cars;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Repository repository = new Repository();
-        CarAdapter carAdapter = new CarAdapter(this, repository.getAll());
-        recyclerView.setAdapter(carAdapter);
+        CarAdapter carAdapter = new CarAdapter(this, repository.getAll(),
+                (car, position) -> {
+                    Intent intent = new Intent(this, DetailActivity.class);
 
-        binding.next.setOnClickListener(v -> {
-            Intent intent = new Intent(this, DetailActivity.class);
-            startActivity(intent);
-        });
+                    intent.putExtra(Util.MODEL_KEY, car.getModel());
+                    intent.putExtra(Util.BRAND_KEY, car.getBrand());
+                    intent.putExtra(Util.YEAR_KEY, car.getYear());
+                    intent.putExtra(Util.COST_KEY, car.getCost());
+                    startActivity(intent);
+                });
+        recyclerView.setAdapter(carAdapter);
     }
 
     @Override
