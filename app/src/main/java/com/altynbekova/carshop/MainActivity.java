@@ -1,5 +1,6 @@
 package com.altynbekova.carshop;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 
@@ -39,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
         Repository repository = new Repository();
         CarAdapter carAdapter = new CarAdapter(this, repository.getAll());
         recyclerView.setAdapter(carAdapter);
+
+        binding.next.setOnClickListener(v -> {
+            Intent intent = new Intent(this, DetailActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
