@@ -1,11 +1,15 @@
 package com.altynbekova.carshop;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-
 
 
 import androidx.navigation.NavController;
@@ -13,18 +17,54 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.altynbekova.carshop.dao.Repository;
 import com.altynbekova.carshop.databinding.ActivityMainBinding;
+import com.altynbekova.carshop.model.Car;
+import com.google.android.material.snackbar.Snackbar;
 
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private CarAdapter carAdapter;
+    private List<Car> cars = new ArrayList<>();
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK &&
+                            result.getData() != null) {
+                        Intent intent = result.getData();
+                        String brand = intent.getStringExtra(Util.BRAND_KEY);
+                        String model = intent.getStringExtra(Util.MODEL_KEY);
+                        List<Car> filtered = new ArrayList<>();
+                        for (Car car : cars) {
+                            if(brand.equals(car.getBrand()) &&
+                                    model.equals(car.getModel())){
+                                filtered.add(car);
+                            }
+                        }
+                        /*filtered = cars.stream().filter(car -> brand.equals(car.getBrand()))
+                                .collect(Collectors.toList());*/
+
+                        cars.clear();
+                        cars.addAll(filtered);
+                        carAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = binding.cars;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Repository repository = new Repository();
-        CarAdapter carAdapter = new CarAdapter(this, repository.getAll(),
+        cars = new ArrayList<>( repository.getAll() );
+        carAdapter = new CarAdapter(this, cars,
                 (car, position) -> {
                     Intent intent = new Intent(this, DetailActivity.class);
 
@@ -49,6 +90,10 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 });
         recyclerView.setAdapter(carAdapter);
+
+        binding.search.setOnClickListener(v -> {
+            mStartForResult.launch(new Intent(this, FilterActivity.class));
+        });
     }
 
     @Override
