@@ -11,10 +11,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.altynbekova.carshop.dao.Repository;
 import com.altynbekova.carshop.databinding.ActivityFilterBinding;
+import com.altynbekova.carshop.model.Car;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FilterActivity extends AppCompatActivity {
     private ActivityFilterBinding binding;
+    private List<String> brands = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,24 +36,36 @@ public class FilterActivity extends AppCompatActivity {
             return insets;
         });
 
+        Repository repository = new Repository();
+        for (Car car : repository.getAll()) {
+            brands.add(car.getBrand().toLowerCase());
+        }
+
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                binding.brand.getText().toString();
-                int count = 0;
-                //todo подсчитываем количество подходящих машин
 
-                binding.filter.setText(count + " matches");
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String brandName = binding.brand.getText().toString().toLowerCase();
+                int count = 0;
+                for (String brand : brands) {
+                    for (Object o : repository.getAll().stream().map(
+                            car -> car.getModel()
+                    ).collect(Collectors.toList())) {
 
+                    }
+                    if(brandName.equals(brand)){
+                        count++;
+                    }
+                }
+                binding.filter.setText(count + " matches");
             }
         };
         binding.brand.addTextChangedListener(textWatcher);
