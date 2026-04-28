@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.ArrayAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,12 +18,14 @@ import com.altynbekova.carshop.model.Car;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class FilterActivity extends AppCompatActivity {
     private ActivityFilterBinding binding;
     private List<String> brands = new ArrayList<>();
-    private List<String> models = new ArrayList<>();
+    private Set<Integer> years = new TreeSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,9 @@ public class FilterActivity extends AppCompatActivity {
         for (Car car : repository.getAll()) {
             brands.add(car.getBrand().toLowerCase());
         }
-        models = repository.getAll().stream()
-                .map(car -> car.getModel().toLowerCase())
-                .collect(Collectors.toList());
+        years = repository.getAll().stream()
+                .map(car -> car.getYear())
+                .collect(Collectors.toSet());
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -59,13 +62,12 @@ public class FilterActivity extends AppCompatActivity {
                 String brandName = binding.brand.getText().toString().toLowerCase();
                 String modelName = binding.model.getText().toString().toLowerCase();
                 int count = 0;
-                for (String brand : brands) {
-                    for (String model : models) {
-                        if (brandName.equals(brand) && modelName.equals(model)) {
-                            count++;
-                        }
+                for (Car car : repository.getAll()) {
+                    if (brandName.equals(car.getBrand()) && modelName.equals(car.getModel())) {
+                        count++;
                     }
                 }
+
                 binding.filter.setText(count + " matches");
             }
         };
@@ -79,5 +81,21 @@ public class FilterActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
             finish();
         });
+
+        // Создаем адаптер ArrayAdapter с помощью массива строк и стандартной разметки элемета spinner
+        ArrayAdapter<Integer> adapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_item, new Integer[]{0, 1000, 2000});
+        // Определяем разметку для использования при выборе элемента
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Применяем адаптер к элементу spinner
+        binding.cost1.setAdapter(adapter);
+        binding.cost2.setAdapter(adapter);
+
+        ArrayAdapter<Integer> yearAdapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_item, new ArrayList(years));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.year1.setAdapter(yearAdapter);
+        binding.year2.setAdapter(yearAdapter);
+        binding.year2.setSelection(years.size() - 1);
     }
 }
