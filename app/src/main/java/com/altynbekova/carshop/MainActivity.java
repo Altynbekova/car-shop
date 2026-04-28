@@ -23,15 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.altynbekova.carshop.dao.Repository;
 import com.altynbekova.carshop.databinding.ActivityMainBinding;
 import com.altynbekova.carshop.model.Car;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
                         String model = intent.getStringExtra(Util.MODEL_KEY);
                         List<Car> filtered = new ArrayList<>();
                         for (Car car : cars) {
-                            if(brand.equals(car.getBrand()) &&
-                                    model.equals(car.getModel())){
+                            if (brand.equals(car.getBrand()) &&
+                                    model.equals(car.getModel())) {
                                 filtered.add(car);
                             }
                         }
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = binding.cars;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Repository repository = new Repository();
-        cars = new ArrayList<>( repository.getAll() );
+        cars = new ArrayList<>(repository.getAll());
         carAdapter = new CarAdapter(this, cars,
                 (car, position) -> {
                     Intent intent = new Intent(this, DetailActivity.class);

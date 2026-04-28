@@ -17,12 +17,12 @@ import com.altynbekova.carshop.model.Car;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FilterActivity extends AppCompatActivity {
     private ActivityFilterBinding binding;
     private List<String> brands = new ArrayList<>();
+    private List<String> models = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,9 @@ public class FilterActivity extends AppCompatActivity {
         for (Car car : repository.getAll()) {
             brands.add(car.getBrand().toLowerCase());
         }
+        models = repository.getAll().stream()
+                .map(car -> car.getModel().toLowerCase())
+                .collect(Collectors.toList());
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -54,21 +57,20 @@ public class FilterActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String brandName = binding.brand.getText().toString().toLowerCase();
+                String modelName = binding.model.getText().toString().toLowerCase();
                 int count = 0;
                 for (String brand : brands) {
-                    for (Object o : repository.getAll().stream().map(
-                            car -> car.getModel()
-                    ).collect(Collectors.toList())) {
-
-                    }
-                    if(brandName.equals(brand)){
-                        count++;
+                    for (String model : models) {
+                        if (brandName.equals(brand) && modelName.equals(model)) {
+                            count++;
+                        }
                     }
                 }
                 binding.filter.setText(count + " matches");
             }
         };
         binding.brand.addTextChangedListener(textWatcher);
+        binding.model.addTextChangedListener(textWatcher);
 
         binding.filter.setOnClickListener(v -> {
             Intent intent = new Intent();
