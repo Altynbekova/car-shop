@@ -9,7 +9,9 @@ public class Repository {
             new Car("brand1", "model1", 2001,
                     "Description of car1", 10000, "photo1"),
             new Car("brand2", "model2", 2002,
-                    "Description of car2", 20000, "photo2")
+                    "Description of car2", 20000, "photo2"),
+            new Car("brand1", "model3", 2001,
+                            "Description of car3", 30000, "photo3")
     );
 
     public List<Car> getAll(){

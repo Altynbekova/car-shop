@@ -8,15 +8,17 @@
     android:orientation="vertical"
     tools:context=".FilterActivity">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/brand"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:completionThreshold="1"/>
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/model"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:completionThreshold="1"/>
 
     <LinearLayout
         android:layout_width="match_parent"

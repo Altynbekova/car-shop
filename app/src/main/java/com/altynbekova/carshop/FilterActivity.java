@@ -17,6 +17,7 @@ import com.altynbekova.carshop.databinding.ActivityFilterBinding;
 import com.altynbekova.carshop.model.Car;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 
 public class FilterActivity extends AppCompatActivity {
     private ActivityFilterBinding binding;
-    private List<String> brands = new ArrayList<>();
+    private Set<String> brands = new HashSet<>();
+    private Set<String> models = new HashSet<>();
     private Set<Integer> years = new TreeSet<>();
 
     @Override
@@ -43,6 +45,9 @@ public class FilterActivity extends AppCompatActivity {
         for (Car car : repository.getAll()) {
             brands.add(car.getBrand().toLowerCase());
         }
+        models = repository.getAll().stream()
+                .map(car -> car.getModel().toLowerCase())
+                .collect(Collectors.toSet());
         years = repository.getAll().stream()
                 .map(car -> car.getYear())
                 .collect(Collectors.toSet());
@@ -63,7 +68,8 @@ public class FilterActivity extends AppCompatActivity {
                 String modelName = binding.model.getText().toString().toLowerCase();
                 int count = 0;
                 for (Car car : repository.getAll()) {
-                    if (brandName.equals(car.getBrand()) && modelName.equals(car.getModel())) {
+                    if (brandName.contains(car.getBrand().toLowerCase()) &&
+                            modelName.contains(car.getModel().toLowerCase())) {
                         count++;
                     }
                 }
@@ -97,5 +103,17 @@ public class FilterActivity extends AppCompatActivity {
         binding.year1.setAdapter(yearAdapter);
         binding.year2.setAdapter(yearAdapter);
         binding.year2.setSelection(years.size() - 1);
+
+        ArrayAdapter<String> brandAdapter = new ArrayAdapter<>(this,
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                new ArrayList<>(brands));
+        binding.brand.setAdapter(brandAdapter);
+
+        ArrayAdapter<String> modelAdapter = new ArrayAdapter<>(this,
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                new ArrayList<>(models));
+        binding.model.setAdapter(modelAdapter);
+
+
     }
 }
